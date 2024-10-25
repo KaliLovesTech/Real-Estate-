@@ -1,11 +1,9 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import PropertyViewSet, search_properties
-
-router = DefaultRouter()
-router.register(r'properties', PropertyViewSet)
+# listings/urls.py
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('api/', include(router.urls)),
-    path('search-properties/', search_properties, name='search_properties'),
+    path('', views.listings, name='listings'),  # Matches /listings/
+    path('property/<int:id>/', views.property_details, name='property_details'),
+    path('properties/', views.PropertyViewSet.as_view({'get': 'list'}), name='properties_list'),  # Matches /listings/properties/
 ]

@@ -1,0 +1,68 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Listings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Available Listings</h1>
+    
+    <!-- Property Search Form -->
+    <form id="property-search-form">
+        <div class="form-group">
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" class="form-control" placeholder="Enter city or state">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    
+    <div id="search-results" class="mt-4"></div> <!-- Placeholder for search results -->
+    
+    <!-- Existing listings -->
+    <div class="row mt-4">
+        {% for property in properties %}
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{{ property.image_url }}" class="card-img-top" alt="{{ property.address }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ property.address }}</h5>
+                    <p class="card-text">Price: ${{ property.price }}</p>
+                    <p class="card-text">Bedrooms: {{ property.bedrooms }}, Bathrooms: {{ property.bathrooms }}</p>
+                    <a href="{% url 'property_details' property.id %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- JavaScript for handling search -->
+<script>
+document.getElementById('property-search-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var location = document.getElementById('location').value;
+    
+    fetch(`/search_properties/?location=${location}`)
+        .then(response => response.json())
+        .then(data => {
+            var resultsDiv = document.getElementById('search-results');
+            resultsDiv.innerHTML = ''; // Clear any existing results
+
+            data.forEach(property => {
+                var propertyCard = `
+                    <div class="card mt-3">
+                        <img src="${property.image_url}" class="card-img-top" alt="${property.address}">
+                        <div class="card-body">
+                            <h5 class="card-title">${property.address}</h5>
+                            <p class="card-text">Price: $${property.price}</p>
+                            <a href="/property/${property.id}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                `;
+                resultsDiv.innerHTML += propertyCard;
+            });
+        })
+        .catch(error => console.error('Error:', error));
+});
+</script>
+{% endblock %}

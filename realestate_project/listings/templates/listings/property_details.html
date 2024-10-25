@@ -1,0 +1,14 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Property Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ property.address }}</h1>
+    <img src="{{ property.image_url }}" class="img-fluid" alt="{{ property.address }}">
+    <p><strong>Price:</strong> ${{ property.price }}</p>
+    <p><strong>Bedrooms:</strong> {{ property.bedrooms }}</p>
+    <p><strong>Bathrooms:</strong> {{ property.bathrooms }}</p>
+    <p><strong>Description:</strong> {{ property.description }}</p>
+</div>
+{% endblock %}

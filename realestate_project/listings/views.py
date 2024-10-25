@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -6,6 +7,7 @@ from .serializers import PropertySerializer
 import requests
 from django.http import JsonResponse
 
+# API viewset for properties
 class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
@@ -17,14 +19,14 @@ class PropertyViewSet(viewsets.ModelViewSet):
         'bedrooms': ['gte', 'lte'],
         'bathrooms': ['gte', 'lte'],
         'square_footage': ['gte', 'lte'],
-        'lot_size': ['gte', 'lte'],  # Add filtering for lot size
-        'year_built': ['gte', 'lte'],  # Add filtering for year built
+        'lot_size': ['gte', 'lte'],  # Filtering for lot size
+        'year_built': ['gte', 'lte'],  # Filtering for year built
         'property_type': ['exact'],
     }
     search_fields = ['description', 'address']  # Enable search for keywords in description and address
-    ordering_fields = ['price', 'square_footage', 'year_built']  # Add ordering by year built
+    ordering_fields = ['price', 'square_footage', 'year_built']  # Ordering by year built
 
-
+# Zillow API search for properties (AJAX calls can use this)
 def search_properties(request):
     location = request.GET.get('location', 'Houston, TX')
     status = request.GET.get('status', 'forSale')
@@ -54,7 +56,14 @@ def search_properties(request):
     except requests.exceptions.SSLError as e:
         return JsonResponse({"error": "SSL Error: {}".format(e)}, status=500)
 
+# HTML template views
+def home(request):
+    return render(request, 'listings/home.html')
 
+def listings(request):
+    properties = Property.objects.all()  # Query all properties from the database
+    return render(request, 'listings/listings.html', {'properties': properties})
 
-
-
+def property_details(request, id):
+    property = Property.objects.get(id=id)
+    return render(request, 'listings/property_details.html', {'property': property})
